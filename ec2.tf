@@ -34,6 +34,8 @@ resource "aws_instance" "jenkins_server" {
   vpc_security_group_ids = [aws_security_group.jenkins_security_group.id]
   instance_type = var.ec2_instance_type
   user_data = file("user_data.sh")
+  user_data_replace_on_change = true
+  
   tags = merge({
     "Description" = "Jenkins Server"
     "Name" = "Jenkins Server"
