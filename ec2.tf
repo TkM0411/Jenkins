@@ -1,16 +1,11 @@
 resource "aws_security_group" "jenkins_security_group" {
   name = "Jenkins-SG"
   description = "Security Group for Jenkins Server"
+  
   ingress {
-    from_port = 80
-    to_port = 80
-    protocol = "tcp"
-    cidr_blocks = local.public_ip_cidr
-  }
-
-  ingress {
-    from_port = 443
-    to_port = 443
+    description = "Port 8080 for Jenkins"
+    from_port = 8080
+    to_port = 8080
     protocol = "tcp"
     cidr_blocks = local.public_ip_cidr
   }
@@ -38,8 +33,18 @@ resource "aws_instance" "jenkins_server" {
   ami = data.aws_ami.amazon_linux_3.id
   vpc_security_group_ids = [aws_security_group.jenkins_security_group.id]
   instance_type = var.ec2_instance_type
+  user_data = file("user_data.sh")
   tags = merge({
     "Description" = "Jenkins Server"
     "Name" = "Jenkins Server"
+  },local.common_tags)
+}
+
+resource "aws_eip" "jenkins_static_ip" {
+  instance = aws_instance.jenkins_server.id
+  domain   = "vpc"
+  tags = merge({
+    "Name" = "Jenkins Static IP"
+    "Description" = "Static IP for Jenkins EC2"
   },local.common_tags)
 }
