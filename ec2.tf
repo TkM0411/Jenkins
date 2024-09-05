@@ -30,7 +30,7 @@ resource "aws_security_group" "jenkins_security_group" {
 }
 
 resource "aws_instance" "jenkins_server" {
-  ami = data.aws_ssm_parameter.jenkins_ami.value #data.aws_ami.amazon_linux_3.id
+  ami = data.aws_ssm_parameter.jenkins_ami.value
   vpc_security_group_ids = [aws_security_group.jenkins_security_group.id]
   instance_type = var.ec2_instance_type
   hibernation = true
